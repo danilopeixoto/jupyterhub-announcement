@@ -46,6 +46,7 @@ class AnnouncementService(Application):
         help="Announcement service prefix",
     ).tag(config=True)
 
+    host = Unicode(None, allow_none=True, help="Host address this service will listen on").tag(config=True)
     port = Integer(8888, help="Port this service will listen on").tag(config=True)
 
     allow_origin = Bool(False, help="Allow access from subdomains").tag(config=True)
@@ -210,7 +211,7 @@ class AnnouncementService(Application):
         self.ssl_context = SSLContext(config=self.config).ssl_context()
 
     def start(self):
-        self.app.listen(self.port, ssl_options=self.ssl_context)
+        self.app.listen(self.port, self.host, ssl_options=self.ssl_context)
 
         async def purge_loop():
             await self.queue.purge()
